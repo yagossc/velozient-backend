@@ -1,10 +1,12 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
+	"velozient-backend/db"
 )
 
 const base10 = 10
@@ -14,13 +16,14 @@ const base10 = 10
 type Server struct {
 	mux  *http.ServeMux
 	port string
-	// repository *repository.MemDB
+	db   *db.MemoryDB
 }
 
-// NewServer returns a routless server
-func NewServer(port string) *Server {
+// NewServer returns a routless server with a db connection.
+func NewServer(port string, db *db.MemoryDB) *Server {
 	mux := http.NewServeMux()
 	return &Server{
+		db:   db,
 		mux:  mux,
 		port: port,
 	}
@@ -35,6 +38,18 @@ func (s *Server) CreateOrGetPasswordCards() http.HandlerFunc {
 		case r.Method == http.MethodGet:
 			fmt.Println("GET /password-cards")
 			w.WriteHeader(http.StatusOK)
+
+			cards := s.db.GetAllCards()
+			fmt.Println(cards)
+			data, err := json.Marshal(cards)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+
+			if _, err := w.Write(data); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+
 		case r.Method == http.MethodPost:
 			fmt.Println("POST /password-cards")
 			w.WriteHeader(http.StatusOK)

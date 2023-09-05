@@ -1,4 +1,4 @@
-package memdb
+package db
 
 import (
 	"fmt"
@@ -20,7 +20,7 @@ type PasswordCard struct {
 // MemoryDB holds access to the
 // applications in-memory data base.
 type MemoryDB struct {
-	mux   *sync.Mutex // needed because of the concurrent nature of the http calls
+	mux   sync.Mutex // needed because of the concurrent nature of the http calls
 	cards map[string]PasswordCard
 }
 
@@ -30,6 +30,19 @@ func NewMemoryDB() *MemoryDB {
 	cards := make(map[string]PasswordCard)
 	return &MemoryDB{
 		cards: cards,
+	}
+}
+
+// PopulateDB exists with the sole purpose
+// of populating the application's database
+// for a good presentation, since this is
+// a technical assignment.
+func (m *MemoryDB) PopulateDB() {
+	for _, card := range initialLoad {
+		guid := xid.New()
+		uuid := guid.String()
+		card.UUID = uuid
+		m.cards[uuid] = card
 	}
 }
 
@@ -55,7 +68,11 @@ func (m *MemoryDB) GetAllCards() []PasswordCard {
 	m.mux.Lock()
 	defer m.mux.Unlock()
 
-	return m.cards
+	cards := make([]PasswordCard, 0)
+	for _, card := range m.cards {
+		cards = append(cards, card)
+	}
+	return cards
 }
 
 // EditCard edits a given card and returns an
@@ -79,7 +96,5 @@ func (m *MemoryDB) EditCard(card PasswordCard) error {
 func (m *MemoryDB) DeleteCard(uuid string) {
 	m.mux.Lock()
 	defer m.mux.Unlock()
-
 	delete(m.cards, uuid)
-	return nil
 }
