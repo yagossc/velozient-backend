@@ -1,9 +1,9 @@
 package db
 
-// initialLoad holds a list of
+// InitialLoad holds a list of
 // PasswordCards to initialize
 // the data base with.
-var initialLoad = []PasswordCard{
+var InitialLoad = []PasswordCard{
 	{
 		URL:      "https://spotify.com",
 		UserName: "Velozient",
@@ -50,6 +50,12 @@ var initialLoad = []PasswordCard{
 		URL:      "https://dropbox.com",
 		UserName: "Dropbox Veloz",
 		Name:     "Dropbox Credentials",
+		Password: "insecure",
+	},
+	{
+		URL:      "https://lorem-ipsum.com",
+		UserName: "Lorem Ipsum Veloz",
+		Name:     "Lorem Credentials",
 		Password: "insecure",
 	},
 }

@@ -12,23 +12,33 @@ import (
 type PasswordCard struct {
 	UUID     string `json:"uuid"`
 	URL      string `json:"url"`
-	UserName string `json:"user_name"`
+	UserName string `json:"userName"`
 	Name     string `json:"name"`
 	Password string `json:"password"` // This wouldn't be plain text IRL (:
 }
 
-// MemoryDB holds access to the
+// MemoryDB encapsulates the needed
+// methods for the applications data layer.
+type MemoryDB interface {
+	CreateCard(card PasswordCard) string
+	GetAllCards() []PasswordCard
+	EditCard(card PasswordCard) error
+	GetCard(uuid string) (PasswordCard, bool)
+	DeleteCard(uuid string)
+}
+
+// memDB holds access to the
 // applications in-memory data base.
-type MemoryDB struct {
+type memDB struct {
 	mux   sync.Mutex // needed because of the concurrent nature of the http calls
 	cards map[string]PasswordCard
 }
 
 // NewMemoryDB creates an
 // empty in-memory data base.
-func NewMemoryDB() *MemoryDB {
+func NewMemoryDB() *memDB {
 	cards := make(map[string]PasswordCard)
-	return &MemoryDB{
+	return &memDB{
 		cards: cards,
 	}
 }
@@ -37,8 +47,8 @@ func NewMemoryDB() *MemoryDB {
 // of populating the application's database
 // for a good presentation, since this is
 // a technical assignment.
-func (m *MemoryDB) PopulateDB() {
-	for _, card := range initialLoad {
+func (m *memDB) PopulateDB(load []PasswordCard) {
+	for _, card := range load {
 		guid := xid.New()
 		uuid := guid.String()
 		card.UUID = uuid
@@ -49,7 +59,7 @@ func (m *MemoryDB) PopulateDB() {
 // CreateCard creates a new card with given info
 // and stores it in the in-memory database and
 // returns the uuid of the newly created password card.
-func (m *MemoryDB) CreateCard(card PasswordCard) string {
+func (m *memDB) CreateCard(card PasswordCard) string {
 	m.mux.Lock()
 	defer m.mux.Unlock()
 
@@ -64,7 +74,7 @@ func (m *MemoryDB) CreateCard(card PasswordCard) string {
 }
 
 // GetAllCards retrieves all stored password cards.
-func (m *MemoryDB) GetAllCards() []PasswordCard {
+func (m *memDB) GetAllCards() []PasswordCard {
 	m.mux.Lock()
 	defer m.mux.Unlock()
 
@@ -77,24 +87,30 @@ func (m *MemoryDB) GetAllCards() []PasswordCard {
 
 // EditCard edits a given card and returns an
 // error in case the password card doesn't exist.
-func (m *MemoryDB) EditCard(card PasswordCard) error {
+func (m *memDB) EditCard(card PasswordCard) error {
 	m.mux.Lock()
 	defer m.mux.Unlock()
 
-	card, ok := m.cards[card.UUID]
+	_, ok := m.cards[card.UUID]
 	if !ok {
 		return fmt.Errorf("card not found: %s", card.UUID)
 	}
 
 	m.cards[card.UUID] = card
-
 	return nil
 }
 
 // DeleteCard deletes a the card identified by uuid.
 // In case uuid is not found, DeleteCards is a no-op.
-func (m *MemoryDB) DeleteCard(uuid string) {
+func (m *memDB) DeleteCard(uuid string) {
 	m.mux.Lock()
 	defer m.mux.Unlock()
 	delete(m.cards, uuid)
+}
+
+func (m *memDB) GetCard(uuid string) (PasswordCard, bool) {
+	m.mux.Lock()
+	defer m.mux.Unlock()
+	c, ok := m.cards[uuid]
+	return c, ok
 }

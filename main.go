@@ -1,21 +1,20 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"velozient-backend/api"
 	"velozient-backend/db"
 )
 
 func main() {
-	fmt.Println("Hello, Velozient Backend!")
-
 	// Create and initialize the database
-	db := db.NewMemoryDB()
-	db.PopulateDB()
+	database := db.NewMemoryDB()
+	database.PopulateDB(db.InitialLoad)
 
 	// Create, setup and run the server
-	server := api.NewServer("8080", db)
-	server.RegisterRoutes()
+	server := api.NewServer("8080", database)
+
+	// Setup routes and middlewares
+	server.Setup()
 	log.Fatal(server.Run())
 }
