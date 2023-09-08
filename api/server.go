@@ -105,7 +105,6 @@ func (s *Server) CreateOrGetPasswordCards(w http.ResponseWriter, r *http.Request
 // a card identified by :id in the /password-cards/:id route.
 func (s *Server) EditOrDeletePasswordCards(w http.ResponseWriter, r *http.Request) {
 	idParam := strings.TrimPrefix(r.URL.Path, "/password-cards/")
-	fmt.Println(idParam)
 
 	switch {
 	case r.Method == http.MethodPut:
