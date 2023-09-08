@@ -55,3 +55,13 @@ Some unit tests are provided in the `package api`.
 
 Improvements: the present unit tests could be incremented and some
 other "integration test" strategy could be applied.
+
+The tests can be executed through:
+```
+> go test -v ./...
+```
+Or, using the container:
+```
+> docker-compose up -d backend
+> docker-compose exec backend sh -c "go test -v ./..."
+```
