@@ -131,12 +131,12 @@ func TestEditCard(t *testing.T) {
 			cardNotFound:   errors.New("card not found"),
 		},
 		{
-			name:           "TEST CREATE MISSING FIELD",
+			name:           "TEST EDIT MISSING FIELD",
 			payload:        `{"password":"pwd"}`,
 			expectedStatus: http.StatusInternalServerError,
 		},
 		{
-			name:           "TEST CREATE INVALID PAYLOAD",
+			name:           "TEST EDIT INVALID PAYLOAD",
 			payload:        `{"uuid":"","url": "url", "userName":"user", "name":"name", "password":"pwd","INVALIDFIELD":"INVALID"}`,
 			expectedStatus: http.StatusInternalServerError,
 		},
