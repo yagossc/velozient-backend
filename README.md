@@ -7,7 +7,7 @@ portability through virtualization;
 
 # Project dependencies
 
-- This project was build using **go1.21.0 linux/amd64**;
+- This project was built using **go1.21.0 linux/amd64**;
 - The laguage's dependencies are listed in the **go.mod** file;
 - A **docker-compose** recipe is also provided in this repository.
 
