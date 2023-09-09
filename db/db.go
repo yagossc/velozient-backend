@@ -23,7 +23,6 @@ type MemoryDB interface {
 	CreateCard(card PasswordCard) string
 	GetAllCards() []PasswordCard
 	EditCard(card PasswordCard) error
-	GetCard(uuid string) (PasswordCard, bool)
 	DeleteCard(uuid string)
 }
 
@@ -106,11 +105,4 @@ func (m *memDB) DeleteCard(uuid string) {
 	m.mux.Lock()
 	defer m.mux.Unlock()
 	delete(m.cards, uuid)
-}
-
-func (m *memDB) GetCard(uuid string) (PasswordCard, bool) {
-	m.mux.Lock()
-	defer m.mux.Unlock()
-	c, ok := m.cards[uuid]
-	return c, ok
 }

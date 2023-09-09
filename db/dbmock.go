@@ -22,10 +22,6 @@ func (d *DBMock) EditCard(card PasswordCard) error {
 	args := d.Called(card)
 	return args.Error(0)
 }
-func (d *DBMock) GetCard(uuid string) (PasswordCard, bool) {
-	args := d.Called(uuid)
-	return args.Get(0).(PasswordCard), args.Bool(1)
-}
 
 func (d *DBMock) DeleteCard(uuid string) {
 	// noop
